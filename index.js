@@ -55,7 +55,8 @@ app.use((err, req, res, next) => {
 		message: err.message
 	});
 });
-app.listen(3001, () => {
+app.listen(port, () => {
 	console.log('server is running');
-	console.log('at port', process.env.PORT);
+	console.log('at jwt', process.env.JWT_TOKEN);
+	console.log('at port', port);
 });
