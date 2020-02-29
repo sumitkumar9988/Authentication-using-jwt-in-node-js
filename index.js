@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const dotenv_file = dotenv.config({ path: './config.env' });
 const userRouter = require('./userRouter/userRouter');
+const appError = require('./utils/Apperror');
+const globalerrorHandler = require('./userControler/errorController');
 const app = express();
 app.use(express.json());
 
@@ -42,19 +44,9 @@ app.use((req, res, next) => {
 
 app.use('/user', userRouter);
 app.use('*', (req, res, next) => {
-	const err = new Error(`cant find ${req.originalUrl} on this server`);
-	err.status = 'fail';
-	err.statusCode = 404;
-	next(err);
+	next(new appError(`cant find ${req.originalUrl} on this server`, 404));
 });
-app.use((err, req, res, next) => {
-	err.statusCode = err.statusCode || 500;
-	err.status = err.status || 'error';
-	res.status(err.statusCode).json({
-		status: err.status,
-		message: err.message
-	});
-});
+app.use(globalerrorHandler);
 app.listen(port, () => {
 	console.log('server is running');
 	console.log('at jwt', process.env.JWT_TOKEN);
